@@ -24,7 +24,7 @@ def bootstrap(data,statistic_func,n_resamples=1000,seed=0):
 
     return est_arr
 
-def jaxstrap(data,statistic_func,n_resamples=1000,seed=0):
+def jaxstrapknife(data, statistic_func, n_resamples=None, seed=0):
     """
     Bootstrap method using JAX arrays
     Input: 
@@ -33,33 +33,21 @@ def jaxstrap(data,statistic_func,n_resamples=1000,seed=0):
     n_samples       (int)
     seed            (int)
     """
-
-    key = jax.random.PRNGKey(seed)
-
-    resamples = jax.random.choice(key,data,(n_resamples,*data.shape),replace=True)
-        
+    if n_resamples is None:
+        resamples = jackknife_resamples(data)
+    else:
+        resamples = bootstrap_resamples(data, n_resamples, seed)
     statistic_vectorized = jax.vmap(statistic_func)
     est_arr = statistic_vectorized(resamples)
 
     return est_arr
 
 
-def jaxknife_func(data,estimator_func):
-    """
-    Jackknife method using JAX arrays
-    # NOTE: systematically leaves out one sample.
+def bootstrap_resamples(data, n_resamples, seed):
+    key = jax.random.PRNGKey(seed)
+    resamples = jax.random.choice(key,data,(n_resamples,*data.shape),replace=True)
+    return resamples
 
-    Input: 
-    data        (array-like)
-    estimator   (function)
-    """
-
-    resamples = jackknife_resamples(data)
-
-    estimator_vectorized = jax.vmap(estimator_func)
-    est_arr = estimator_vectorized(resamples)
-
-    return est_arr
 
 def jackknife_resamples(data):
     redata = jnp.repeat(jnp.array([data]), data.shape[0], axis=0)
