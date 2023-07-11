@@ -18,32 +18,11 @@ def bootstrap(data,estimator_func,n_resamples=1000,seed=0):
  
     for i in range(n_resamples):
         idx = np.random.randint(len(data), size=len(data))
-        resample = data[idx,:]
+        resample = data[idx]
         
         est_arr[i] = estimator_func(resample)
 
     return est_arr
-
-def bootstrap_nparray(data,estimator,n_resamples=1000,seed=0):
-    """
-    Bootstrap method using one large numpy array
-    ~~UNFINISHED~~
-
-    Input: 
-    data        (array-like)
-    estimator   (function)
-    n_samples   (int)
-    seed        (int)
-    """
-
-    est_arr = np.zeros(n_resamples)
-
- 
-    np.random.seed(seed)
-    #resample = jax.random.choice(subkey,data,(len(data),),replace=True,axis=0)
-    #est_arr[i] = estimator(resample)
-
-    return 
 
 def jaxstrap(data,estimator_func,n_resamples=1000,seed=0):
     """
