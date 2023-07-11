@@ -2,26 +2,25 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-def bootstrap_loop(data,estimator,n_resamples=1000,seed=0):
+def bootstrap(data,estimator_func,n_resamples=1000,seed=0):
     """
     Bootstrap method using numpy and a for loop
 
     Input: 
     data        (array-like)
-    estimator   (function)
+    estimator_func   (function)
     n_samples   (int)
     seed        (int)
     """
 
     est_arr = np.zeros(n_resamples)
-    key = jax.random.PRNGKey(seed)
-
+    np.random.seed(seed)
  
     for i in range(n_resamples):
-        np.random.seed(seed)
-        key, subkey = jax.random.split(key)
-        resample = jax.random.choice(subkey,data,(len(data),),replace=True,axis=0)
-        est_arr[i] = estimator(resample)
+        idx = np.random.randint(len(data), size=len(data))
+        resample = data[idx,:]
+        
+        est_arr[i] = estimator_func(resample)
 
     return est_arr
 
