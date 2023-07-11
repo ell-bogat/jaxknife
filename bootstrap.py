@@ -1,4 +1,5 @@
 import jax
+import jax.numpy as jnp
 import numpy as np
 
 def bootstrap(data,estimator,n_resamples=1000,seed=0):
@@ -9,6 +10,8 @@ def bootstrap(data,estimator,n_resamples=1000,seed=0):
     n_samples   (int)
     seed        (int)
     """
+
+    # TO DO: change this to one giant array so we can do it in JAX -Ell
 
     key = jax.random.PRNGKey(seed)
 
