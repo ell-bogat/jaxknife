@@ -1,0 +1,4 @@
+# GIT IGNORE
+
+# VSCode workspace files
+*.code-workspace
