@@ -4,6 +4,8 @@ import numpy as np
 
 def bootstrap(data,estimator,n_resamples=1000,seed=0):
     """
+    Numpy bootstrap method
+
     Input: 
     data        (array-like)
     estimator   (function)
@@ -21,8 +23,9 @@ def bootstrap(data,estimator,n_resamples=1000,seed=0):
 
     return est_arr
 
-def jaxstrap(data,estimator,n_resamples=1000,seed=0):
+def jaxstrap(data,estimator_func,n_resamples=1000,seed=0):
     """
+    JAX accelerated bootstrap method
     Input: 
     data        (array-like)
     estimator   (function)
@@ -34,11 +37,9 @@ def jaxstrap(data,estimator,n_resamples=1000,seed=0):
 
     key = jax.random.PRNGKey(seed)
 
-    est_arr = np.zeros(n_resamples)
- 
-    key, subkey = jax.random.split(key)
-    resamples = jax.random.choice(subkey,data,(n_resamples,*data.shape),replace=True)
+    resamples = jax.random.choice(key,data,(n_resamples,*data.shape),replace=True)
         
-    est_arr[i] = estimator(resamples)
+    estimator_vectorized = jax.vmap(estimator_func)
+    est_arr = estimator_vectorized(resamples)
 
     return est_arr
