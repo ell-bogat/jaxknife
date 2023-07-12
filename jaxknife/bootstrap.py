@@ -2,15 +2,19 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-def bootstrap(data,statistic_func,n_resamples=1000,seed=0):
-    """
-    Bootstrap method using numpy and a for loop
+def bootstrap(data,statistic_func,n_resamples=1000,seed=0) -> np.ndarray:
+    """Slow Bootstrap.
 
-    Input: 
-    data            (array-like)
-    statistic_func  (function)
-    n_samples       (int)
-    seed            (int)
+    Use numpy and a for loop to generate bootstrap errors on a given statistic.
+
+    Args:
+        data (array-like): Input data, first axis must a sequence of the realizations of the random variable.
+        statistic_func (callable): Function to calculate the desired statistic over the given data.
+        n_resamples (int, optional): Number of bootstrap resamples. Defaults to 1000.
+        seed (int, optional): RNG seed. Defaults to 0.
+
+    Returns:
+        array: Values of the statistic calculated for each resample.
     """
 
     est_arr = np.zeros(n_resamples)
@@ -25,14 +29,7 @@ def bootstrap(data,statistic_func,n_resamples=1000,seed=0):
     return est_arr
 
 def jaxstrapknife(data, statistic_func, n_resamples=None, seed=0):
-    """
-    Bootstrap method using JAX arrays
-    Input: 
-    data            (array-like)
-    statistic_func  (function)
-    n_samples       (int)
-    seed            (int)
-    """
+
     if n_resamples is None:
         resamples = jackknife_resamples(data)
     else:
