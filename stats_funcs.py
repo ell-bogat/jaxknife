@@ -14,10 +14,10 @@ def com_1D(positions, masses=None, axis=0):
 
 def vel_disp_1D(velocities, axis =0):
     
-    if velocities.ndim == 2:
-        vxs = velocities[:,axis]
+    if velocities.ndim == 3:
+        vxs = velocities[:,1,axis]
     else:
-        raise Exception('Only implemented for 2d data')
+        raise Exception('Only implemented for 3d data')
     
     return jnp.std(vxs)
 
