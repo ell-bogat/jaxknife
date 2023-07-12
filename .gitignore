@@ -6,6 +6,10 @@
 # Python files
 __pycache__*
 
+# Python build files
 build/*
 dist/*
 *.egg-info/*
+
+# Mac files
+*.DS_Store
