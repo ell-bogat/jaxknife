@@ -2,42 +2,38 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-def bootstrap(data,statistic_func,n_resamples=1000,seed=0) -> np.ndarray:
-    """Slow Bootstrap.
-
-    Use numpy and a for loop to generate bootstrap errors on a given statistic.
-
-    Args:
-        data (array-like): Input data, first axis must a sequence of the realizations of the random variable.
-        statistic_func (callable): Function to calculate the desired statistic over the given data.
-        n_resamples (int, optional): Number of bootstrap resamples. Defaults to 1000.
-        seed (int, optional): RNG seed. Defaults to 0.
-
-    Returns:
-        array: Values of the statistic calculated for each resample.
-    """
-
-    est_arr = np.zeros(n_resamples)
-    np.random.seed(seed)
- 
-    for i in range(n_resamples):
-        idx = np.random.randint(len(data), size=len(data))
-        resample = data[idx]
-        
-        est_arr[i] = statistic_func(resample)
-
+def bootstrap(data, statistic_func, n_resamples, seed):
+    resamples = bootstrap_resamples(data, n_resamples, seed)
+    est_arr = _apply_vect_statistic(statistic_func, resamples)
     return est_arr
 
-def jaxstrapknife(data, statistic_func, n_resamples=None, seed=0):
+def jackknife(data, statistic_func):
+    resamples = jackknife_resamples(data)
+    est_arr = _apply_vect_statistic(statistic_func, resamples)
+    return est_arr
 
-    if n_resamples is None:
-        resamples = jackknife_resamples(data)
-    else:
-        resamples = bootstrap_resamples(data, n_resamples, seed)
+def _apply_vect_statistic(statistic_func, resamples):
     statistic_vectorized = jax.vmap(statistic_func)
-    est_arr = statistic_vectorized(resamples)
+    return statistic_vectorized(resamples)
 
-    return est_arr
+
+# def jaxstrapknife(data, statistic_func, n_resamples=None, seed=0):
+#     """
+#     Bootstrap method using JAX arrays
+#     Input: 
+#     data            (array-like)
+#     statistic_func  (function)
+#     n_samples       (int)
+#     seed            (int)
+#     """
+#     if n_resamples is None:
+#         resamples = jackknife_resamples(data)
+#     else:
+#         resamples = bootstrap_resamples(data, n_resamples, seed)
+#     statistic_vectorized = jax.vmap(statistic_func)
+#     est_arr = statistic_vectorized(resamples)
+
+    # return est_arr
 
 
 def bootstrap_resamples(data, n_resamples, seed):
