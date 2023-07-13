@@ -1,4 +1,4 @@
-from jaxknife.bootstrap import bootstrap
+from jaxknife.jaxknife import bootstrap
 from make_testdata import *
 from jaxknife.stats_funcs import com_1D
 import pytest

@@ -1,4 +1,4 @@
-from jaxknife.bootstrap import bootstrap_resamples, jackknife_resamples
+from jaxknife.jaxknife import bootstrap_resamples
 from make_testdata import *
 
 
