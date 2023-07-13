@@ -37,12 +37,31 @@ def _apply_vect_statistic(statistic_func, resamples):
 
 
 def bootstrap_resamples(data, n_resamples, seed):
+    """_summary_
+
+    Args:
+        data (_type_): _description_
+        n_resamples (_type_): _description_
+        seed (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     key = jax.random.PRNGKey(seed)
-    resamples = jax.random.choice(key,data,(n_resamples,*data.shape),replace=True)
+    resamples_size = (n_resamples,data.shape[0])
+    resamples = jax.random.choice(key,data,resamples_size,replace=True)
     return resamples
 
 
 def jackknife_resamples(data):
+    """_summary_
+
+    Args:
+        data (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     redata = jnp.repeat(jnp.array([data]), data.shape[0], axis=0)
     mask = jnp.repeat(~jnp.eye(data.shape[0], dtype=bool).reshape(data.shape[0], data.shape[0], -1), data.shape[-1], axis=2)
     return redata[mask].reshape(data.shape[0], data.shape[0]-1, -1)
