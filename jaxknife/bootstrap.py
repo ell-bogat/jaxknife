@@ -3,49 +3,58 @@ import jax.numpy as jnp
 import numpy as np
 
 def bootstrap(data, statistic_func, n_resamples, seed):
+    """Bootstrap.
+
+    Args:
+        data (array): Input data with shape (N, ...) where N is the number of realizations of the observable.
+        statistic_func (callable): Function to calculate a statistic on one set of realizations of the observable.
+        n_resamples (int): Number of times to resample the data.
+        seed (int): Seed for RNG.
+
+    Returns:
+        jax array: The value of the statistic for each resample.
+    """
     resamples = bootstrap_resamples(data, n_resamples, seed)
     est_arr = _apply_vect_statistic(statistic_func, resamples)
     return est_arr
 
 def jackknife(data, statistic_func):
+    """Jackknife.
+
+    Args:
+        data (array): Input data with shape (N, ...) where N is the number of realizations of the observable.
+        statistic_func (callable): Function to calculate a statistic on one set of realizations of the observable.
+        
+    Returns:
+        jax array: The value of the statistic for each resample.
+    """
     resamples = jackknife_resamples(data)
     est_arr = _apply_vect_statistic(statistic_func, resamples)
     return est_arr
 
 def _apply_vect_statistic(statistic_func, resamples):
+    """Vectorize and apply statistic function.
+
+    Args:
+        statistic_func (callable): Function to calculate a statistic on one set of realizations of the observable.
+        resamples (jax array): Resampled data with shape (n_resamples, N, ...)
+
+    Returns:
+        jax array: The value of the statistic for each resample.
+    """
     statistic_vectorized = jax.vmap(statistic_func)
     return statistic_vectorized(resamples)
 
-
-# def jaxstrapknife(data, statistic_func, n_resamples=None, seed=0):
-#     """
-#     Bootstrap method using JAX arrays
-#     Input: 
-#     data            (array-like)
-#     statistic_func  (function)
-#     n_samples       (int)
-#     seed            (int)
-#     """
-#     if n_resamples is None:
-#         resamples = jackknife_resamples(data)
-#     else:
-#         resamples = bootstrap_resamples(data, n_resamples, seed)
-#     statistic_vectorized = jax.vmap(statistic_func)
-#     est_arr = statistic_vectorized(resamples)
-
-    # return est_arr
-
-
 def bootstrap_resamples(data, n_resamples, seed):
-    """_summary_
+    """Generate bootstrap resamples.
 
     Args:
-        data (_type_): _description_
-        n_resamples (_type_): _description_
-        seed (_type_): _description_
+        data (array): Input data with shape (N, ...) where N is the number of realizations of the observable.
+        n_resamples (int): Number of times to resample the data.
+        seed (int): Seed for RNG.
 
     Returns:
-        _type_: _description_
+        jax array: Resampled data with shape (n_resamples, N, ...)
     """
     key = jax.random.PRNGKey(seed)
     resamples_size = (n_resamples,data.shape[0])
@@ -54,13 +63,13 @@ def bootstrap_resamples(data, n_resamples, seed):
 
 
 def jackknife_resamples(data):
-    """_summary_
+    """Generate jackknife resamples.
 
     Args:
-        data (_type_): _description_
-
+        data (array): Input data with shape (N, ...) where N is the number of realizations of the observable.
+    
     Returns:
-        _type_: _description_
+        jax array: Resampled data with shape (N, N, ...)
     """
     redata = jnp.repeat(jnp.array([data]), data.shape[0], axis=0)
     mask = jnp.repeat(~jnp.eye(data.shape[0], dtype=bool).reshape(data.shape[0], data.shape[0], -1), data.shape[-1], axis=2)
