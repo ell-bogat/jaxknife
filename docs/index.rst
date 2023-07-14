@@ -10,7 +10,8 @@ Welcome to jaxknife's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   bootstrap.rst
+   jaxknife.rst
+   stats_funcs.rst
 
 Indices and tables
 ==================
